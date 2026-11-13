@@ -1,0 +1,19 @@
+-- 1. Criação da tabela de log de auditoria
+CREATE TABLE IF NOT EXISTS log_auditoria (
+    id_log INT AUTO_INCREMENT PRIMARY KEY,
+    acao VARCHAR(50),
+    data_hora DATETIME
+);
+
+-- 2. Criação do Trigger
+DELIMITER //
+
+CREATE TRIGGER trg_auditoria_paciente_delete
+AFTER DELETE ON paciente
+FOR EACH ROW
+BEGIN
+    INSERT INTO log_auditoria (acao, data_hora) 
+    VALUES ('Paciente deletado', NOW());
+END //
+
+DELIMITER ;
