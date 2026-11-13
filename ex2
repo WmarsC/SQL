@@ -1,0 +1,6 @@
+CREATE OR REPLACE VIEW vw_recepcao_pacientes AS
+SELECT 
+    id_paciente,
+    nome,
+    CONCAT(SUBSTRING(cpf, 1, 5), '...') AS cpf_mascarado
+FROM paciente;
