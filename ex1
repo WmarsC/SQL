@@ -1,0 +1,4 @@
+USE medscheduler_db;
+
+INSERT INTO usuario (nome_usuario, senha) 
+VALUES ('admin_teste', SHA2('SenhaSegura123', 256));
