@@ -1,0 +1,94 @@
+USE medscheduler_db;
+
+CREATE TABLE IF NOT EXISTS prontuario (
+    id_prontuario INT AUTO_INCREMENT PRIMARY KEY,
+    id_consulta INT NOT NULL,
+    data_registro DATETIME NOT NULL,
+    descricao_sintomas TEXT NOT NULL,
+    diagnostico_cid VARCHAR(50) NOT NULL,
+    FOREIGN KEY (id_consulta) REFERENCES consulta(id_consulta)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS prescricao (
+    id_prescricao INT AUTO_INCREMENT PRIMARY KEY,
+    id_prontuario INT NOT NULL,
+    medicamento VARCHAR(100) NOT NULL,
+    dosagem VARCHAR(50) NOT NULL,
+    instrucoes TEXT NOT NULL,
+    FOREIGN KEY (id_prontuario) REFERENCES prontuario(id_prontuario)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS log_acesso_sensivel (
+    id_log INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    tabela_acessada VARCHAR(100) NOT NULL,
+    data_hora_acesso DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO prontuario (id_consulta, data_registro, descricao_sintomas, diagnostico_cid) VALUES
+(1, '2026-03-01 10:30:00', 'Febre alta e tosse seca', 'J06.9'),
+(2, '2026-03-01 11:15:00', 'Dor de cabeça constante e tontura', 'R51'),
+(3, '2026-03-02 09:00:00', 'Dor lombar ao abaixar', 'M54.5'),
+(4, '2026-03-02 14:20:00', 'Falta de ar e chiado no peito', 'J45'),
+(5, '2026-03-03 08:45:00', 'Pressão arterial elevada', 'I10');
+
+INSERT INTO prescricao (id_prontuario, medicamento, dosagem, instrucoes) VALUES
+(1, 'Paracetamol', '750mg', 'Tomar 1 comprimido de 6 em 6 horas se houver febre'),
+(2, 'Dipirona', '500mg', 'Tomar 1 comprimido em caso de dor forte'),
+(3, 'Ibuprofeno', '400mg', 'Tomar após as refeições por 3 dias'),
+(4, 'Salbutamol (Inalador)', '100mcg', 'Fazer inalação quando houver falta de ar'),
+(5, 'Losartana', '50mg', 'Tomar 1 vez ao dia pela manhã');
+
+INSERT INTO prontuario (id_consulta, data_registro, descricao_sintomas, diagnostico_cid) VALUES
+(1, '2026-03-01 10:30:00', 'Febre alta e tosse seca', 'J06.9'),
+(2, '2026-03-01 11:15:00', 'Dor de cabeça constante e tontura', 'R51'),
+(3, '2026-03-02 09:00:00', 'Dor lombar ao abaixar', 'M54.5'),
+(4, '2026-03-02 14:20:00', 'Falta de ar e chiado no peito', 'J45'),
+(5, '2026-03-03 08:45:00', 'Pressão arterial elevada', 'I10'),
+(6, '2026-03-03 10:00:00', 'Dor abdominal e náuseas', 'K30'),
+(7, '2026-03-04 11:30:00', 'Garganta inflamada e dificuldade para engolir', 'J02.9'),
+(8, '2026-03-04 15:00:00', 'Alergia na pele com coceira intensa', 'L20'),
+(9, '2026-03-05 09:15:00', 'Fadiga extrema e tontura ao levantar', 'R53'),
+(10, '2026-03-05 13:40:00', 'Dor no joelho direito após exercício', 'M23.9'),
+(11, '2026-03-06 08:30:00', 'Tosse alérgica e coriza', 'J30.4'),
+(12, '2026-03-06 10:50:00', 'Dores musculares generalizadas', 'M79.1'),
+(13, '2026-03-07 14:00:00', 'Enxaqueca com sensibilidad à luz', 'G43'),
+(14, '2026-03-08 09:20:00', 'Queimação no estômago após as refeições', 'K21'),
+(15, '2026-03-08 16:10:00', 'Inchaço nos tornozelos', 'R60');
+
+INSERT INTO prescricao (id_prontuario, medicamento, dosagem, instrucoes) VALUES
+(1, 'Paracetamol', '750mg', 'Tomar 1 comprimido de 6 em 6 horas se houver febre'),
+(2, 'Dipirona', '500mg', 'Tomar 1 comprimido em caso de dor forte'),
+(3, 'Ibuprofeno', '400mg', 'Tomar após as refeições por 3 dias'),
+(4, 'Salbutamol (Inalador)', '100mcg', 'Fazer inalação quando houver falta de ar'),
+(5, 'Losartana', '50mg', 'Tomar 1 vez ao dia pela manhã'),
+(6, 'Omeprazol', '20mg', 'Tomar em jejum pela manhã'),
+(7, 'Amoxicilina', '500mg', 'Tomar 1 cápsula de 8 em 8 horas por 7 dias'),
+(8, 'Loratadina', '10mg', 'Tomar 1 comprimido ao dia'),
+(9, 'Vitamina D', '2000UI', 'Tomar 1 cápsula ao dia junto com o almoço'),
+(10, 'Nimesulida', '100mg', 'Tomar de 12 em 12 horas por 3 dias após refeição'),
+(11, 'Fexofenadina', '120mg', 'Tomar 1 comprimido por dia'),
+(12, 'Ciclobenzaprina', '5mg', 'Tomar 1 comprimido antes de dormir'),
+(13, 'Sumatriptana', '50mg', 'Tomar ao iniciar a crise de enxaqueca'),
+(14, 'Antiácido em gel', '10ml', 'Tomar após as principais refeições'),
+(15, 'Furosemida', '40mg', 'Tomar pela manhã conforme orientação médica');
+
+DESCRIBE paciente;
+DESCRIBE medico;
+DESCRIBE consulta;
+
+SELECT 
+    p.nome AS Nome_Paciente,
+    CONCAT(SUBSTRING(p.cpf, 1, 5), '...') AS CPF,
+    m.nome AS Nome_Medico,
+    c.data_consulta AS Data_Consulta,
+    CASE 
+        WHEN pr.diagnostico_cid IS NOT NULL AND pr.diagnostico_cid != '' THEN 'Acompanhamento'
+        ELSE 'Livre'
+    END AS status_saude
+FROM consulta c
+INNER JOIN paciente p ON c.id_paciente = p.id_paciente
+INNER JOIN medico m ON c.id_medico = m.id_medico
+LEFT JOIN prontuario pr ON c.id_consulta = pr.id_consulta;
