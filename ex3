@@ -1,0 +1,10 @@
+DELIMITER //
+
+CREATE FUNCTION calcular_idade(data_nascimento DATE) 
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    RETURN TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE());
+END //
+
+DELIMITER ;
