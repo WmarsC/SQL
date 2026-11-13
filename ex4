@@ -1,0 +1,14 @@
+DELIMITER //
+
+CREATE PROCEDURE sp_novo_paciente(
+    IN p_nome VARCHAR(100),
+    IN p_cpf VARCHAR(14),
+    IN p_data_nasc DATE,
+    IN p_email VARCHAR(100)
+)
+BEGIN
+    INSERT INTO paciente (nome, cpf, data_nasc, email) 
+    VALUES (p_nome, p_cpf, p_data_nasc, p_email);
+END //
+
+DELIMITER ;
